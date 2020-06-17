@@ -1,12 +1,12 @@
 from werkzeug.security import safe_str_cmp
 from db_dealer import UserDealer
-from user import User
+from models.usermodel import UserModel
 
 
 def authenticate(username, password):
     reckon = UserDealer.find_by_column(username, "username")
     if reckon:
-        user = User(*reckon.values())
+        user = UserModel(*reckon.values())
         if safe_str_cmp(user.password, password):
             return user
 
@@ -14,4 +14,3 @@ def authenticate(username, password):
 def identity(payload):
     user_id = payload["identity"]
     return UserDealer.find_by_column(user_id, "id")
-

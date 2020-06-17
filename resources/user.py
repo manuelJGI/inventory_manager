@@ -2,13 +2,6 @@ from flask_restful import Resource, reqparse
 from db_dealer import UserDealer
 
 
-class User:
-    def __init__(self, _id, username, password):
-        self.id = _id
-        self.username = username
-        self.password = password
-
-
 class UserRegister(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument("username", type=str, required=True, help="This field cannot be left blank")
