@@ -33,11 +33,16 @@ class Item(Resource):
 
     @jwt_required()
     def delete(self, name):
-        try:
-            ItemModel.delete_item(name)
+        """
+        simple delete endpoint for item model
+        :param name: the name of the item to be deleted
+        :return: json
+        """
+        item = ItemModel.find_by_name(name)
+        if item:
+            item.delete_item()
             return {"message": "Item deleted"}
-        except:
-            return {"message": "Item not found"}, 404
+        return {"message": "Item not found"}, 404
 
     @jwt_required()
     def put(self, name):
