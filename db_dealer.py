@@ -1,5 +1,6 @@
 import sqlite3
 import sys
+from db import db
 
 
 class DBSource:
@@ -18,7 +19,13 @@ class DBSource:
         self.connection.close()
 
 
-class UserDealer:
+class UserDealer(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80))
+    password = db.Column(db.String(80))
+
     @classmethod
     def find_by_column(cls, datum, column):
         with DBSource() as dbdealer:

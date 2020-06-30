@@ -4,7 +4,7 @@ from models.usermodel import UserModel
 
 
 def authenticate(username, password):
-    reckon = UserDealer.find_by_column(username, "username")
+    reckon = UserDealer.find_by_username(username)
     if reckon:
         user = UserModel(*reckon.values())
         if safe_str_cmp(user.password, password):
@@ -13,4 +13,4 @@ def authenticate(username, password):
 
 def identity(payload):
     user_id = payload["identity"]
-    return UserDealer.find_by_column(user_id, "id")
+    return UserDealer.find_by_id(user_id)

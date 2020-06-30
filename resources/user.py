@@ -13,8 +13,8 @@ class UserRegister(Resource):
 
         if UserDealer.find_by_column(data["username"], "username"):
             return {"message": "User already exists"}, 400
-        try:
-            UserDealer.register_user(data["username"], data["password"])
-        except:
-            return {"message": "Internal server error"}, 500
+
+        user = UserDealer(data["username"], data["password"])
+        user.save_to_db()
+
         return {"message": "User created successfully"}, 201

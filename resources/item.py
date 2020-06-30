@@ -25,7 +25,7 @@ class Item(Resource):
         item = ItemModel(name, data["price"])
 
         try:
-            item.insert()
+            item.save_to_db()
         except:
             return {"message": "An error occurred inserting the item."}, 500
 
@@ -49,19 +49,12 @@ class Item(Resource):
         data = Item.parser.parse_args()
         item = ItemModel.find_by_name(name)
         if item:
-            try:
-                item.price = data["price"]
-                item.update()
-            except:
-                return {"message": "An error occurred updating the item."}, 500
-            return {"message": "Item has been updated"}, 200
+            item.price = data["price"]
         else:
-            try:
-                item = ItemModel(name, data["price"])
-                item.insert()
-            except:
-                return {"message": "An error occurred inserting the item."}, 500
-            return {"message": "Item created successfully."}, 201
+            item = ItemModel(name, data["price"])
+
+        item.save_to_db()
+        return item.json()
 
 
 class ItemList(Resource):

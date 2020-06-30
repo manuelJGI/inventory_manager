@@ -1,8 +1,14 @@
-import sqlite3
 from db_dealer import DBSource
+from db import db
 
 
-class ItemModel:
+class ItemModel(db.Model):
+    __tablename__ = "items"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80))
+    price = db.Column(db.FLOAT(precision=2))
+
     def __init__(self, name, price):
         self.name = name
         self.price = price
@@ -15,20 +21,13 @@ class ItemModel:
             query = "UPDATE items SET price=? WHERE name=?"
             dbdealer.execute(query, (self.price, self.name))
 
-    def insert(self):
-        with DBSource() as dbdealer:
-            query = "INSERT INTO items VALUES (?,?)"
-            dbdealer.execute(query, (self.name, self.price))
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
 
     @classmethod
     def find_by_name(cls, name):
-        with DBSource() as dbdealer:
-            query = "SELECT * FROM items WHERE name=?"
-            result = dbdealer.execute(query, (name,))
-            row = result.fetchone()
-        if row:
-            return cls(*row)
-        return None
+        return cls.query.filter_by(name=name).first()
 
     @classmethod
     def select_all_items(cls, limit=100):
@@ -39,9 +38,5 @@ class ItemModel:
         return {"items": [dict(name=row[0], price=row[1]) for row in rows]}
 
     def delete_item(self):
-        if self.find_by_name(self.name):
-            with DBSource() as dbdealer:
-                query = "DELETE FROM items WHERE name=?"
-                dbdealer.execute(query, (self.name,))
-        else:
-            raise sqlite3.OperationalError("Item not found")
+        db.session.delete(self)
+        db.session.commit()
