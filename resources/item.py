@@ -60,8 +60,4 @@ class Item(Resource):
 class ItemList(Resource):
     @jwt_required()
     def get(self):
-        items = ItemModel.select_all_items()
-        if items["items"]:
-            return items
-        else:
-            return {"message": "There aren't any items stored in db."}
+        return {"items": [item.json() for item in ItemModel.query.all()]}
