@@ -2,22 +2,19 @@ from db_dealer import DBSource
 from db import db
 
 
-class ItemModel(db.Model):
-    __tablename__ = "items"
+class StoreModel(db.Model):
+    __tablename__ = "stores"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
-    price = db.Column(db.FLOAT(precision=2))
 
-    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"))
-    store = db.relationship("StoreModel")
+    items = db.relationship("ItemModel", lazy="dynamic")
 
-    def __init__(self, name, price):
+    def __init__(self, name):
         self.name = name
-        self.price = price
 
     def json(self):
-        return {"items": {"name": self.name, "price": self.price}}
+        return {"name": self.name, "items": [item.json() for item in self.items]}
 
     def update(self):
         with DBSource() as dbdealer:
@@ -40,6 +37,6 @@ class ItemModel(db.Model):
             rows = result.fetchall()
         return {"items": [dict(name=row[0], price=row[1]) for row in rows]}
 
-    def delete_item(self):
+    def delete_store(self):
         db.session.delete(self)
         db.session.commit()
